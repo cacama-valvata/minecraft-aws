@@ -6,5 +6,4 @@ kubectl get svc
 
 helm install my-minecraft -f helm-values.yaml minecraft-server-charts/minecraft
 
-CONN = kubectl get svc --namespace default my-minecraft-minecraft | grep my-minecraft-minecraft | awk '{ print $4 }'
-echo "THE MINECRAFT SERVER IS ACCESSIBLE AT: $CONN"
+echo THE MINECRAFT SERVER IS ACCESSIBLE AT: $(kubectl get svc --namespace default my-minecraft-minecraft | grep my-minecraft-minecraft | awk '{ print $4 }')

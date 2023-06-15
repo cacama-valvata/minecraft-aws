@@ -6,7 +6,7 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 
 locals {
-	cluster_name = "minecraft-cluster"
+	cluster_name = "the-minecraft-cluster"
 }
 
 module "vpc" {
