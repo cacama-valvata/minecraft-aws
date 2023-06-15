@@ -1,0 +1,10 @@
+minecraftServer:
+  eula: "TRUE"
+  version: "1.20"
+  difficulty: medium
+
+  serviceType: LoadBalancer
+
+persistence:
+  dataDir:
+    enabled: true
