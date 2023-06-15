@@ -8,6 +8,8 @@ Adapted from [Hashicorp's EKS Tutorial](https://github.com/hashicorp/learn-terra
 
 What The Company needs is a grossly-overengineered solution to the problem of system administrators' work not being reproducible. To this end, we will deploy a Minecraft server in the cloud, where it will be always accessible, and on Kubernetes where it can adapt to the load that users place on it. (But ignore the part where Minecraft was never engineered to be horizontally scalable and that we can't have more than 1 replica on the cluster in practice...)
 
+We will also implement persistent storage for the cluster, so that restarts or shutdowns of the cluster to do not result in a loss of Minecraft world data. Employees would be heartbroken if their hard work in Minecraft was lost, and they were forced to return to their jobs.
+
 ## Pipeline
 
 ```
@@ -90,6 +92,18 @@ $ ./setup.sh
 This will begin the process of provisioning and configuring the Kubernetes cluster on AWS. Be patient! It will likely take 30 minutes to an hour to complete.
 
 The very last thing that the script will do is output the access point of the server. This link is what you will provide to the end users to connect to the Minecraft server.
+
+### Storage Persistence
+
+The cluster is configured through Terraform to use the [Container Storage Interface (CSI)](https://aws.amazon.com/blogs/containers/amazon-ebs-csi-driver-is-now-generally-available-in-amazon-eks-add-ons/) on AWS, which stores it on EBS. There is also an option to configure in the Minecraft Helm Chart to specify that persistent storage should be used. With these two configurations, the world data of the Minecraft cluster is stored on EBS, so that in the case of a cluster shutdown or restart, it will not be lost.
+
+The EBS volume storing the world data can be identified in the EBS dashboard by referencing the cluster name, such as `the-minecraft-cluster-dynamic-pvc-48d58ee0-9b70-41e8-b305-86d0f2476708`. It should be 1 GiB in size.
+
+### Tearing Down the cluster
+
+An additional script is included in the repository to tear down the cluster on AWS. It will first uninstall the Helm Chart from the cluster, and then begin deleting the resources that Terraform created for the cluster.
+
+**Be sure to backup your minecraft world before running the destroy script!** The teardown process will also delete the EBS storage associated with the cluster, containing the Minecraft world data.
 
 ## Connecting to the Server as a User
 
